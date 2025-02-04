@@ -186,7 +186,9 @@
 #include <stdint.h>
 
 #include <array>
+#if __STDC_HOSTED__
 #include <string>
+#endif
 #include <tuple>
 #include <type_traits>
 #include <typeinfo>
@@ -194,9 +196,13 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#if __STDC_HOSTED__
 #include "absl/debugging/internal/demangle.h"
+#endif
 #include "absl/meta/type_traits.h"
+#if __STDC_HOSTED__
 #include "absl/strings/str_cat.h"
+#endif
 #include "absl/types/span.h"
 #include "absl/utility/utility.h"
 
@@ -303,6 +309,7 @@ constexpr size_t Max(size_t a, size_t b, Ts... rest) {
   return adl_barrier::Max(b < a ? a : b, rest...);
 }
 
+#if __STDC_HOSTED__
 template <class T>
 std::string TypeName() {
   std::string out;
@@ -313,7 +320,7 @@ std::string TypeName() {
 #endif
   return out;
 }
-
+#endif
 }  // namespace adl_barrier
 
 template <bool C>
@@ -644,6 +651,7 @@ class LayoutImpl<
 #endif
   }
 
+#if __STDC_HOSTED__
   // Human-readable description of the memory layout. Useful for debugging.
   // Slow.
   //
@@ -678,7 +686,7 @@ class LayoutImpl<
     }
     return res;
   }
-
+#endif
  private:
   size_t DebugSize(size_t n) const {
     if (n < NumStaticSizes) {

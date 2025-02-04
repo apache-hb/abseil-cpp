@@ -94,7 +94,9 @@ std::unique_ptr<T> WrapUnique(T* ptr) {
 // the C++14's `std::make_unique`. Now that C++11 support has been sunsetted,
 // `absl::make_unique` simply uses the STL-provided implementation. New code
 // should use `std::make_unique`.
+#if __STDC_HOSTED__
 using std::make_unique;
+#endif
 
 // -----------------------------------------------------------------------------
 // Function Template: RawPtr()
@@ -133,11 +135,12 @@ inline std::nullptr_t RawPtr(std::nullptr_t) { return nullptr; }
 //
 // Implements the resolution of [LWG 2415](http://wg21.link/lwg2415), by which a
 // null shared pointer does not attempt to call the deleter.
+#if __STDC_HOSTED__
 template <typename T, typename D>
 std::shared_ptr<T> ShareUniquePtr(std::unique_ptr<T, D>&& ptr) {
   return ptr ? std::shared_ptr<T>(std::move(ptr)) : std::shared_ptr<T>();
 }
-
+#endif
 // -----------------------------------------------------------------------------
 // Function Template: WeakenPtr()
 // -----------------------------------------------------------------------------
@@ -153,11 +156,12 @@ std::shared_ptr<T> ShareUniquePtr(std::unique_ptr<T, D>&& ptr) {
 //    sp.reset();
 //    CHECK(wp.lock() == nullptr);
 //
+#if __STDC_HOSTED__
 template <typename T>
 std::weak_ptr<T> WeakenPtr(const std::shared_ptr<T>& ptr) {
   return std::weak_ptr<T>(ptr);
 }
-
+#endif
 // -----------------------------------------------------------------------------
 // Class Template: pointer_traits
 // -----------------------------------------------------------------------------

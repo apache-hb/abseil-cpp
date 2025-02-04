@@ -24,8 +24,10 @@
 #include <cstdio>
 #include <limits>
 #include <memory>
+#if __STDC_HOSTED__
 #include <sstream>
 #include <string>
+#endif
 #include <type_traits>
 #include <utility>
 
@@ -219,12 +221,14 @@ ArgConvertResult<FormatConversionCharSetInternal::p> FormatConvertImpl(
 using StringConvertResult = ArgConvertResult<FormatConversionCharSetUnion(
     FormatConversionCharSetInternal::s,
     FormatConversionCharSetInternal::v)>;
+#if __STDC_HOSTED__
 StringConvertResult FormatConvertImpl(const std::string& v,
                                       FormatConversionSpecImpl conv,
                                       FormatSinkImpl* sink);
 StringConvertResult FormatConvertImpl(const std::wstring& v,
                                       FormatConversionSpecImpl conv,
                                       FormatSinkImpl* sink);
+#endif
 StringConvertResult FormatConvertImpl(string_view v,
                                       FormatConversionSpecImpl conv,
                                       FormatSinkImpl* sink);
@@ -368,7 +372,7 @@ typename std::enable_if<std::is_enum<T>::value &&
                             !HasAbslStringify<T>::value,
                         IntegralConvertResult>::type
 FormatConvertImpl(T v, FormatConversionSpecImpl conv, FormatSinkImpl* sink);
-
+#if __STDC_HOSTED__
 template <typename T>
 StringConvertResult FormatConvertImpl(const StreamedWrapper<T>& v,
                                       FormatConversionSpecImpl conv,
@@ -378,7 +382,7 @@ StringConvertResult FormatConvertImpl(const StreamedWrapper<T>& v,
   if (!oss) return {false};
   return str_format_internal::FormatConvertImpl(oss.str(), conv, out);
 }
-
+#endif
 // Use templates and dependent types to delay evaluation of the function
 // until after FormatCountCapture is fully defined.
 struct FormatCountCaptureHelper {

@@ -20,8 +20,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#if __STDC_HOSTED__
 #include <ostream>
 #include <string>
+#endif
 
 #include "absl/base/config.h"
 #include "absl/strings/internal/str_format/output.h"
@@ -151,13 +153,13 @@ constexpr bool FlagsContains(Flags haystack, Flags needle) {
   return (static_cast<uint8_t>(haystack) & static_cast<uint8_t>(needle)) ==
          static_cast<uint8_t>(needle);
 }
-
+#if __STDC_HOSTED__
 std::string FlagsToString(Flags v);
 
 inline std::ostream& operator<<(std::ostream& os, Flags v) {
   return os << FlagsToString(v);
 }
-
+#endif
 // clang-format off
 #define ABSL_INTERNAL_CONVERSION_CHARS_EXPAND_(X_VAL, X_SEP) \
   /* text */ \
@@ -261,14 +263,14 @@ inline char FormatConversionCharToChar(FormatConversionChar c) {
 #undef ABSL_INTERNAL_X_VAL
 #undef ABSL_INTERNAL_X_SEP
 }
-
+#if __STDC_HOSTED__
 // The associated char.
 inline std::ostream& operator<<(std::ostream& os, FormatConversionChar v) {
   char c = FormatConversionCharToChar(v);
   if (!c) c = '?';
   return os << c;
 }
-
+#endif
 struct FormatConversionSpecImplFriend;
 
 class FormatConversionSpecImpl {
@@ -334,9 +336,11 @@ struct FormatConversionSpecImplFriend final {
   static void SetPrecision(int p, FormatConversionSpecImpl* conv) {
     conv->precision_ = p;
   }
+#if __STDC_HOSTED__
   static std::string FlagsToString(const FormatConversionSpecImpl& spec) {
     return str_format_internal::FlagsToString(spec.flags_);
   }
+#endif
 };
 
 // Type safe OR operator.

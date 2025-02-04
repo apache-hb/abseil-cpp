@@ -37,9 +37,16 @@
 
 #include <cstddef>
 #include <functional>
+
+#if __STDC_HOSTED__
 #include <string>
+#endif
+
 #include <type_traits>
+
+#if __STDC_HOSTED__
 #include <vector>
+#endif
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -606,11 +613,13 @@ struct IsOwnerImpl<
 template <typename T>
 struct IsOwner : IsOwnerImpl<T> {};
 
+#if __STDC_HOSTED__
 template <typename T, typename Traits, typename Alloc>
 struct IsOwner<std::basic_string<T, Traits, Alloc>> : std::true_type {};
 
 template <typename T, typename Alloc>
 struct IsOwner<std::vector<T, Alloc>> : std::true_type {};
+#endif
 
 // Detects if a class's definition has declared itself to be a view by declaring
 //   using absl_internal_is_view = std::true_type;

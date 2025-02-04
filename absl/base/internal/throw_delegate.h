@@ -17,7 +17,9 @@
 #ifndef ABSL_BASE_INTERNAL_THROW_DELEGATE_H_
 #define ABSL_BASE_INTERNAL_THROW_DELEGATE_H_
 
+#if __STDC_HOSTED__
 #include <string>
+#endif
 
 #include "absl/base/config.h"
 
@@ -39,23 +41,26 @@ namespace base_internal {
 // both with and without exceptions and you need to conform to an interface
 // that uses exceptions.
 
+#if __STDC_HOSTED__
 [[noreturn]] void ThrowStdLogicError(const std::string& what_arg);
-[[noreturn]] void ThrowStdLogicError(const char* what_arg);
 [[noreturn]] void ThrowStdInvalidArgument(const std::string& what_arg);
-[[noreturn]] void ThrowStdInvalidArgument(const char* what_arg);
 [[noreturn]] void ThrowStdDomainError(const std::string& what_arg);
-[[noreturn]] void ThrowStdDomainError(const char* what_arg);
 [[noreturn]] void ThrowStdLengthError(const std::string& what_arg);
-[[noreturn]] void ThrowStdLengthError(const char* what_arg);
 [[noreturn]] void ThrowStdOutOfRange(const std::string& what_arg);
-[[noreturn]] void ThrowStdOutOfRange(const char* what_arg);
 [[noreturn]] void ThrowStdRuntimeError(const std::string& what_arg);
-[[noreturn]] void ThrowStdRuntimeError(const char* what_arg);
 [[noreturn]] void ThrowStdRangeError(const std::string& what_arg);
-[[noreturn]] void ThrowStdRangeError(const char* what_arg);
 [[noreturn]] void ThrowStdOverflowError(const std::string& what_arg);
-[[noreturn]] void ThrowStdOverflowError(const char* what_arg);
 [[noreturn]] void ThrowStdUnderflowError(const std::string& what_arg);
+#endif
+
+[[noreturn]] void ThrowStdLogicError(const char* what_arg);
+[[noreturn]] void ThrowStdInvalidArgument(const char* what_arg);
+[[noreturn]] void ThrowStdDomainError(const char* what_arg);
+[[noreturn]] void ThrowStdLengthError(const char* what_arg);
+[[noreturn]] void ThrowStdOutOfRange(const char* what_arg);
+[[noreturn]] void ThrowStdRuntimeError(const char* what_arg);
+[[noreturn]] void ThrowStdRangeError(const char* what_arg);
+[[noreturn]] void ThrowStdOverflowError(const char* what_arg);
 [[noreturn]] void ThrowStdUnderflowError(const char* what_arg);
 
 [[noreturn]] void ThrowStdBadFunctionCall();

@@ -53,12 +53,16 @@
 #include <functional>
 #include <iterator>
 #include <limits>
+#if __STDC_HOSTED__
 #include <string>
+#endif
 #include <type_traits>
 #include <utility>
 
 #include "absl/base/config.h"
+#if __STDC_HOSTED__
 #include "absl/base/internal/raw_logging.h"
+#endif
 #include "absl/base/macros.h"
 #include "absl/container/internal/common.h"
 #include "absl/container/internal/common_policy_traits.h"
@@ -67,7 +71,9 @@
 #include "absl/container/internal/layout.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
+#if __STDC_HOSTED__
 #include "absl/strings/cord.h"
+#endif
 #include "absl/strings/string_view.h"
 #include "absl/types/compare.h"
 
@@ -108,18 +114,23 @@ struct StringBtreeDefaultLess {
   StringBtreeDefaultLess() = default;
 
   // Compatibility constructor.
+#if __STDC_HOSTED__
   StringBtreeDefaultLess(std::less<std::string>) {}        // NOLINT
+#endif
   StringBtreeDefaultLess(std::less<absl::string_view>) {}  // NOLINT
 
   // Allow converting to std::less for use in key_comp()/value_comp().
+#if __STDC_HOSTED__
   explicit operator std::less<std::string>() const { return {}; }
-  explicit operator std::less<absl::string_view>() const { return {}; }
   explicit operator std::less<absl::Cord>() const { return {}; }
+#endif
+  explicit operator std::less<absl::string_view>() const { return {}; }
 
   absl::weak_ordering operator()(absl::string_view lhs,
                                  absl::string_view rhs) const {
     return compare_internal::compare_result_as_ordering(lhs.compare(rhs));
   }
+#if __STDC_HOSTED__
   StringBtreeDefaultLess(std::less<absl::Cord>) {}  // NOLINT
   absl::weak_ordering operator()(const absl::Cord &lhs,
                                  const absl::Cord &rhs) const {
@@ -133,25 +144,30 @@ struct StringBtreeDefaultLess {
                                  const absl::Cord &rhs) const {
     return compare_internal::compare_result_as_ordering(-rhs.Compare(lhs));
   }
+#endif
 };
 
 struct StringBtreeDefaultGreater {
   using is_transparent = void;
 
   StringBtreeDefaultGreater() = default;
-
+#if __STDC_HOSTED__
   StringBtreeDefaultGreater(std::greater<std::string>) {}        // NOLINT
+#endif
   StringBtreeDefaultGreater(std::greater<absl::string_view>) {}  // NOLINT
 
   // Allow converting to std::greater for use in key_comp()/value_comp().
+#if __STDC_HOSTED__
   explicit operator std::greater<std::string>() const { return {}; }
-  explicit operator std::greater<absl::string_view>() const { return {}; }
   explicit operator std::greater<absl::Cord>() const { return {}; }
+#endif
+  explicit operator std::greater<absl::string_view>() const { return {}; }
 
   absl::weak_ordering operator()(absl::string_view lhs,
                                  absl::string_view rhs) const {
     return compare_internal::compare_result_as_ordering(rhs.compare(lhs));
   }
+#if __STDC_HOSTED__
   StringBtreeDefaultGreater(std::greater<absl::Cord>) {}  // NOLINT
   absl::weak_ordering operator()(const absl::Cord &lhs,
                                  const absl::Cord &rhs) const {
@@ -165,6 +181,7 @@ struct StringBtreeDefaultGreater {
                                  const absl::Cord &rhs) const {
     return compare_internal::compare_result_as_ordering(rhs.Compare(lhs));
   }
+#endif
 };
 
 // See below comments for checked_compare.
@@ -273,7 +290,7 @@ struct key_compare_adapter {
       std::is_base_of<BtreeTestOnlyCheckedCompareOptOutBase, Compare>::value,
       Compare, checked_compare>;
 };
-
+#if __STDC_HOSTED__
 template <>
 struct key_compare_adapter<std::less<std::string>, std::string> {
   using type = StringBtreeDefaultLess;
@@ -283,7 +300,7 @@ template <>
 struct key_compare_adapter<std::greater<std::string>, std::string> {
   using type = StringBtreeDefaultGreater;
 };
-
+#endif
 template <>
 struct key_compare_adapter<std::less<absl::string_view>, absl::string_view> {
   using type = StringBtreeDefaultLess;
@@ -293,7 +310,7 @@ template <>
 struct key_compare_adapter<std::greater<absl::string_view>, absl::string_view> {
   using type = StringBtreeDefaultGreater;
 };
-
+#if __STDC_HOSTED__
 template <>
 struct key_compare_adapter<std::less<absl::Cord>, absl::Cord> {
   using type = StringBtreeDefaultLess;
@@ -303,7 +320,7 @@ template <>
 struct key_compare_adapter<std::greater<absl::Cord>, absl::Cord> {
   using type = StringBtreeDefaultGreater;
 };
-
+#endif
 // Detects an 'absl_btree_prefer_linear_node_search' member. This is
 // a protocol used as an opt-in or opt-out of linear search.
 //
@@ -1072,10 +1089,12 @@ class btree_iterator_generation_info_enabled {
   template <typename Node>
   void assert_valid_generation(const Node *node) const {
     if (node != nullptr && node->generation() != generation_) {
+#if __STDC_HOSTED__
       ABSL_INTERNAL_LOG(
           FATAL,
           "Attempting to use an invalidated iterator. The corresponding b-tree "
           "container has been mutated since this iterator was constructed.");
+#endif
     }
   }
 

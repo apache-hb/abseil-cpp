@@ -18,7 +18,9 @@
 
 #include <algorithm>
 #include <cstddef>
+#if __STDC_HOSTED__
 #include <string>
+#endif
 #include <type_traits>
 
 #include "absl/algorithm/algorithm.h"
@@ -40,12 +42,13 @@ constexpr auto GetDataImpl(C& c, char) noexcept  // NOLINT(runtime/references)
   return c.data();
 }
 
+#if __STDC_HOSTED__
 // Before C++17, std::string::data returns a const char* in all cases.
 inline char* GetDataImpl(std::string& s,  // NOLINT(runtime/references)
                          int) noexcept {
   return &s[0];
 }
-
+#endif
 template <typename C>
 constexpr auto GetData(C& c) noexcept  // NOLINT(runtime/references)
     -> decltype(GetDataImpl(c, 0)) {

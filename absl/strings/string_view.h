@@ -31,11 +31,14 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
+#if __STDC_HOSTED__
 #include <iosfwd>
+#endif
 #include <iterator>
 #include <limits>
+#if __STDC_HOSTED__
 #include <string>
-
+#endif
 #include "absl/base/attributes.h"
 #include "absl/base/nullability.h"
 #include "absl/base/config.h"

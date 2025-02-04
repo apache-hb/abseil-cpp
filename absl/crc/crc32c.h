@@ -26,10 +26,14 @@
 #define ABSL_CRC_CRC32C_H_
 
 #include <cstdint>
+#if __STDC_HOSTED__
 #include <ostream>
+#endif
 
 #include "absl/crc/internal/crc32c_inline.h"
+#if __STDC_HOSTED__
 #include "absl/strings/str_format.h"
+#endif
 #include "absl/strings/string_view.h"
 
 namespace absl {
@@ -61,12 +65,12 @@ class crc32c_t final {
   }
 
   friend bool operator!=(crc32c_t lhs, crc32c_t rhs) { return !(lhs == rhs); }
-
+#if __STDC_HOSTED__
   template <typename Sink>
   friend void AbslStringify(Sink& sink, crc32c_t crc) {
     absl::Format(&sink, "%08x", static_cast<uint32_t>(crc));
   }
-
+#endif
  private:
   uint32_t crc_;
 };
@@ -176,13 +180,14 @@ crc32c_t RemoveCrc32cPrefix(crc32c_t prefix_crc, crc32c_t full_string_crc,
 // This operation has a runtime cost of O(log(`suffix_len`))
 crc32c_t RemoveCrc32cSuffix(crc32c_t full_string_crc, crc32c_t suffix_crc,
                             size_t suffix_length);
-
+#if __STDC_HOSTED__
 // operator<<
 //
 // Streams the CRC32C value `crc` to the stream `os`.
 inline std::ostream& operator<<(std::ostream& os, crc32c_t crc) {
   return os << absl::StreamFormat("%08x", static_cast<uint32_t>(crc));
 }
+#endif
 
 ABSL_NAMESPACE_END
 }  // namespace absl
