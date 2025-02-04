@@ -16,7 +16,9 @@
 #define ABSL_BASE_LOG_SEVERITY_H_
 
 #include <array>
+#if __STDC_HOSTED__
 #include <ostream>
+#endif
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -121,13 +123,13 @@ constexpr absl::LogSeverity NormalizeLogSeverity(absl::LogSeverity s) {
 constexpr absl::LogSeverity NormalizeLogSeverity(int s) {
   return absl::NormalizeLogSeverity(static_cast<absl::LogSeverity>(s));
 }
-
+#if __STDC_HOSTED__
 // operator<<
 //
 // The exact representation of a streamed `absl::LogSeverity` is deliberately
 // unspecified; do not rely on it.
 std::ostream& operator<<(std::ostream& os, absl::LogSeverity s);
-
+#endif
 // Enums representing a lower bound for LogSeverity. APIs that only operate on
 // messages of at least a certain level (for example, `SetMinLogLevel()`) use
 // this type to specify that level. absl::LogSeverityAtLeast::kInfinity is
@@ -140,9 +142,9 @@ enum class LogSeverityAtLeast : int {
   kFatal = static_cast<int>(absl::LogSeverity::kFatal),
   kInfinity = 1000,
 };
-
+#if __STDC_HOSTED__
 std::ostream& operator<<(std::ostream& os, absl::LogSeverityAtLeast s);
-
+#endif
 // Enums representing an upper bound for LogSeverity. APIs that only operate on
 // messages of at most a certain level (for example, buffer all messages at or
 // below a certain level) use this type to specify that level.
@@ -155,9 +157,9 @@ enum class LogSeverityAtMost : int {
   kError = static_cast<int>(absl::LogSeverity::kError),
   kFatal = static_cast<int>(absl::LogSeverity::kFatal),
 };
-
+#if __STDC_HOSTED__
 std::ostream& operator<<(std::ostream& os, absl::LogSeverityAtMost s);
-
+#endif
 #define COMPOP(op1, op2, T)                                         \
   constexpr bool operator op1(absl::T lhs, absl::LogSeverity rhs) { \
     return static_cast<absl::LogSeverity>(lhs) op1 rhs;             \

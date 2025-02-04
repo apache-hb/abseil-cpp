@@ -84,13 +84,13 @@ R InvokeFunction(VoidPtr ptr, typename ForwardT<Args>::type... args) {
   return static_cast<R>(
       absl::base_internal::invoke(f, std::forward<Args>(args)...));
 }
-
+#if __STDC_HOSTED__
 template <typename Sig>
 void AssertNonNull(const std::function<Sig>& f) {
   assert(f != nullptr);
   (void)f;
 }
-
+#endif
 template <typename Sig>
 void AssertNonNull(const AnyInvocable<Sig>& f) {
   assert(f != nullptr);

@@ -44,7 +44,9 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#if __STDC_HOSTED__
 #include <vector>
+#endif
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -52,8 +54,10 @@
 #include "absl/base/optimization.h"
 #include "absl/base/thread_annotations.h"
 #include "absl/profiling/internal/sample_recorder.h"
+#if __STDC_HOSTED__
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
+#endif
 #include "absl/utility/utility.h"
 
 namespace absl {
@@ -75,7 +79,10 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   void PrepareForSampling(int64_t stride, size_t inline_element_size_value,
                           size_t key_size, size_t value_size,
                           uint16_t soo_capacity_value)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
+#if __STDC_HOSTED__
+      ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu)
+#endif
+      ;
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.
@@ -96,7 +103,9 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   // which can read them only during `SampleRecorder::Iterate` which will hold
   // the lock.
   static constexpr int kMaxStackDepth = 64;
+#if __STDC_HOSTED__
   absl::Time create_time;
+#endif
   int32_t depth;
   // The SOO capacity for this table in elements (not bytes). Note that sampled
   // tables are never SOO because we need to store the infoz handle on the heap.

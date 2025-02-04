@@ -180,7 +180,9 @@
 
 #include <algorithm>
 #include <cassert>
+#if __STDC_HOSTED__
 #include <cmath>
+#endif
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -208,7 +210,9 @@
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_traits.h"
+#if __STDC_HOSTED__
 #include "absl/container/internal/hashtable_debug_hooks.h"
+#endif
 #include "absl/container/internal/hashtablez_sampler.h"
 #include "absl/hash/hash.h"
 #include "absl/memory/memory.h"
@@ -2401,7 +2405,7 @@ void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
 
 // Type-erased version of raw_hash_set::erase_meta_only.
 void EraseMetaOnly(CommonFields& c, size_t index, size_t slot_size);
-
+#if __STDC_HOSTED__
 // Function to place in PolicyFunctions::dealloc for raw_hash_sets
 // that are using std::allocator. This allows us to share the same
 // function body for raw_hash_set instantiations that have the
@@ -2419,7 +2423,7 @@ ABSL_ATTRIBUTE_NOINLINE void DeallocateStandard(CommonFields& common,
       &alloc, common.backing_array_start(),
       common.alloc_size(policy.slot_size, AlignOfSlot));
 }
-
+#endif
 // For trivially relocatable types we use memcpy directly. This allows us to
 // share the same function body for raw_hash_set instantiations that have the
 // same slot size as long as they are relocatable.
@@ -2696,10 +2700,11 @@ class raw_hash_set {
 
   class const_iterator {
     friend class raw_hash_set;
+#if __STDC_HOSTED__
     template <class Container, typename Enabler>
     friend struct absl::container_internal::hashtable_debug_internal::
         HashtableDebugAccess;
-
+#endif
    public:
     using iterator_category = typename iterator::iterator_category;
     using value_type = typename raw_hash_set::value_type;
@@ -3636,10 +3641,11 @@ class raw_hash_set {
   }
 
  private:
+#if __STDC_HOSTED__
   template <class Container, typename Enabler>
   friend struct absl::container_internal::hashtable_debug_internal::
       HashtableDebugAccess;
-
+#endif
   friend struct absl::container_internal::HashtableFreeFunctionsAccess;
 
   struct FindElement {
@@ -4259,9 +4265,13 @@ class raw_hash_set {
         PolicyTraits::transfer_uses_memcpy()
             ? TransferRelocatable<sizeof(slot_type)>
             : &raw_hash_set::transfer_slot_fn,
+#if __STDC_HOSTED__
         (std::is_same<SlotAlloc, std::allocator<slot_type>>::value
              ? &DeallocateStandard<alignof(slot_type)>
              : &raw_hash_set::dealloc_fn),
+#else
+        &raw_hash_set::dealloc_fn,
+#endif
         &raw_hash_set::resize_impl
     };
     return value;
@@ -4347,7 +4357,7 @@ template <typename P, typename H, typename E, typename A, typename Callback>
 void ForEach(Callback& cb, const raw_hash_set<P, H, E, A>* c) {
   return HashtableFreeFunctionsAccess::ForEach(cb, c);
 }
-
+#if __STDC_HOSTED__
 namespace hashtable_debug_internal {
 template <typename Set>
 struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
@@ -4396,6 +4406,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
 };
 
 }  // namespace hashtable_debug_internal
+#endif
 }  // namespace container_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -37,26 +37,38 @@
 #include <array>
 #include <bitset>
 #include <cassert>
+#if __STDC_HOSTED__
 #include <cmath>
+#endif
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#if __STDC_HOSTED__
 #include <deque>
 #include <forward_list>
+#endif
 #include <functional>
 #include <iterator>
 #include <limits>
+#if __STDC_HOSTED__
 #include <list>
 #include <map>
+#endif
 #include <memory>
+#if __STDC_HOSTED__
 #include <set>
 #include <string>
+#endif
 #include <tuple>
 #include <type_traits>
+#if __STDC_HOSTED__
 #include <unordered_map>
 #include <unordered_set>
+#endif
 #include <utility>
+#if __STDC_HOSTED__
 #include <vector>
+#endif
 
 #include "absl/base/attributes.h"
 #include "absl/base/internal/endian.h"
@@ -68,7 +80,9 @@
 #include "absl/hash/internal/low_level_hash.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
+#if __STDC_HOSTED__
 #include "absl/numeric/int128.h"
+#endif
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
@@ -435,7 +449,7 @@ AbslHashValue(H hash_state, Float value) {
   return hash_internal::hash_bytes(std::move(hash_state),
                                    value == 0 ? 0 : value);
 }
-
+#if __STDC_HOSTED__
 // Long double has the property that it might have extra unused bytes in it.
 // For example, in x86 sizeof(long double)==16 but it only really uses 80-bits
 // of it. This means we can't use hash_bytes on a long double and have to
@@ -470,7 +484,7 @@ AbslHashValue(H hash_state, LongDouble value) {
 
   return H::combine(std::move(hash_state), category);
 }
-
+#endif
 // Without this overload, an array decays to a pointer and we hash that, which
 // is not likely to be what the caller intended.
 template <typename H, typename T, size_t N>
@@ -579,13 +593,13 @@ template <typename H, typename T, typename D>
 H AbslHashValue(H hash_state, const std::unique_ptr<T, D>& ptr) {
   return H::combine(std::move(hash_state), ptr.get());
 }
-
+#if __STDC_HOSTED__
 // AbslHashValue for hashing shared_ptr
 template <typename H, typename T>
 H AbslHashValue(H hash_state, const std::shared_ptr<T>& ptr) {
   return H::combine(std::move(hash_state), ptr.get());
 }
-
+#endif
 // -----------------------------------------------------------------------------
 // AbslHashValue for String-Like Types
 // -----------------------------------------------------------------------------
@@ -611,7 +625,7 @@ H AbslHashValue(H hash_state, absl::string_view str) {
       H::combine_contiguous(std::move(hash_state), str.data(), str.size()),
       str.size());
 }
-
+#if __STDC_HOSTED__
 // Support std::wstring, std::u16string and std::u32string.
 template <typename Char, typename Alloc, typename H,
           typename = absl::enable_if_t<std::is_same<Char, wchar_t>::value ||
@@ -624,7 +638,7 @@ H AbslHashValue(
       H::combine_contiguous(std::move(hash_state), str.data(), str.size()),
       str.size());
 }
-
+#endif
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 
 // Support std::wstring_view, std::u16string_view and std::u32string_view.
@@ -675,7 +689,7 @@ typename std::enable_if<is_hashable<T>::value, H>::type AbslHashValue(
   return H::combine_contiguous(std::move(hash_state), array.data(),
                                array.size());
 }
-
+#if __STDC_HOSTED__
 // AbslHashValue for hashing std::deque
 template <typename H, typename T, typename Allocator>
 typename std::enable_if<is_hashable<T>::value, H>::type AbslHashValue(
@@ -859,7 +873,7 @@ AbslHashValue(H hash_state,
       H::combine_unordered(std::move(hash_state), s.begin(), s.end()),
       s.size());
 }
-
+#endif
 // -----------------------------------------------------------------------------
 // AbslHashValue for Wrapper Types
 // -----------------------------------------------------------------------------

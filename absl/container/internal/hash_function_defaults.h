@@ -48,14 +48,18 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#if __STDC_HOSTED__
 #include <string>
+#endif
 #include <type_traits>
 
 #include "absl/base/config.h"
 #include "absl/container/internal/common.h"
 #include "absl/hash/hash.h"
 #include "absl/meta/type_traits.h"
+#if __STDC_HOSTED__
 #include "absl/strings/cord.h"
+#endif
 #include "absl/strings/string_view.h"
 
 #ifdef ABSL_HAVE_STD_STRING_VIEW
@@ -79,9 +83,11 @@ struct StringHash {
   size_t operator()(absl::string_view v) const {
     return absl::Hash<absl::string_view>{}(v);
   }
+#if __STDC_HOSTED__
   size_t operator()(const absl::Cord& v) const {
     return absl::Hash<absl::Cord>{}(v);
   }
+#endif
 };
 
 struct StringEq {
@@ -89,6 +95,7 @@ struct StringEq {
   bool operator()(absl::string_view lhs, absl::string_view rhs) const {
     return lhs == rhs;
   }
+#if __STDC_HOSTED__
   bool operator()(const absl::Cord& lhs, const absl::Cord& rhs) const {
     return lhs == rhs;
   }
@@ -98,6 +105,7 @@ struct StringEq {
   bool operator()(absl::string_view lhs, const absl::Cord& rhs) const {
     return lhs == rhs;
   }
+#endif
 };
 
 // Supports heterogeneous lookup for string-like elements.
@@ -107,12 +115,13 @@ struct StringHashEq {
 };
 
 template <>
+struct HashEq<absl::string_view> : StringHashEq {};
+#if __STDC_HOSTED__
+template <>
 struct HashEq<std::string> : StringHashEq {};
 template <>
-struct HashEq<absl::string_view> : StringHashEq {};
-template <>
 struct HashEq<absl::Cord> : StringHashEq {};
-
+#endif
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 
 template <typename TChar>
@@ -141,18 +150,19 @@ struct BasicStringHashEq {
 };
 
 template <>
-struct HashEq<std::wstring> : BasicStringHashEq<wchar_t> {};
-template <>
 struct HashEq<std::wstring_view> : BasicStringHashEq<wchar_t> {};
-template <>
-struct HashEq<std::u16string> : BasicStringHashEq<char16_t> {};
 template <>
 struct HashEq<std::u16string_view> : BasicStringHashEq<char16_t> {};
 template <>
-struct HashEq<std::u32string> : BasicStringHashEq<char32_t> {};
-template <>
 struct HashEq<std::u32string_view> : BasicStringHashEq<char32_t> {};
-
+#if __STDC_HOSTED__
+template <>
+struct HashEq<std::wstring> : BasicStringHashEq<wchar_t> {};
+template <>
+struct HashEq<std::u16string> : BasicStringHashEq<char16_t> {};
+template <>
+struct HashEq<std::u32string> : BasicStringHashEq<char32_t> {};
+#endif
 #endif  // ABSL_HAVE_STD_STRING_VIEW
 
 // Supports heterogeneous lookup for pointers and smart pointers.
@@ -179,17 +189,20 @@ struct HashEq<T*> {
   static const T* ToPtr(const std::unique_ptr<U, D>& ptr) {
     return ptr.get();
   }
+#if __STDC_HOSTED__
   template <class U>
   static const T* ToPtr(const std::shared_ptr<U>& ptr) {
     return ptr.get();
   }
+#endif
 };
 
 template <class T, class D>
 struct HashEq<std::unique_ptr<T, D>> : HashEq<T*> {};
+#if __STDC_HOSTED__
 template <class T>
 struct HashEq<std::shared_ptr<T>> : HashEq<T*> {};
-
+#endif
 template <typename T, typename E = void>
 struct HasAbslContainerHash : std::false_type {};
 

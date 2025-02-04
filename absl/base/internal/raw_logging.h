@@ -19,7 +19,11 @@
 #ifndef ABSL_BASE_INTERNAL_RAW_LOGGING_H_
 #define ABSL_BASE_INTERNAL_RAW_LOGGING_H_
 
+#include <string_view>
+
+#if __STDC_HOSTED__
 #include <string>
+#endif
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
@@ -194,7 +198,7 @@ using AbortHook = void (*)(const char* file, int line, const char* buf_start,
 // interface to take its message as a string_view instead.
 using InternalLogFunction = void (*)(absl::LogSeverity severity,
                                      const char* file, int line,
-                                     const std::string& message);
+                                     std::string_view message);
 
 ABSL_INTERNAL_ATOMIC_HOOK_ATTRIBUTES ABSL_DLL extern base_internal::AtomicHook<
     InternalLogFunction>

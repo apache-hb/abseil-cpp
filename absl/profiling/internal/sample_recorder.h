@@ -30,8 +30,10 @@
 
 #include "absl/base/config.h"
 #include "absl/base/thread_annotations.h"
+#if __STDC_HOSTED__
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -43,10 +45,12 @@ template <typename T>
 struct Sample {
   // Guards the ability to restore the sample to a pristine state.  This
   // prevents races with sampling and resurrecting an object.
+#if __STDC_HOSTED__
   absl::Mutex init_mu;
   T* next = nullptr;
   T* dead ABSL_GUARDED_BY(init_mu) = nullptr;
   int64_t weight;  // How many sampling events were required to sample this one.
+#endif
 };
 
 // Holds samples and their associated stack traces with a soft limit of
@@ -72,11 +76,11 @@ class SampleRecorder {
   // Returns the previous callback.
   using DisposeCallback = void (*)(const T&);
   DisposeCallback SetDisposeCallback(DisposeCallback f);
-
+#if __STDC_HOSTED__
   // Iterates over all the registered `StackInfo`s.  Returning the number of
   // samples that have been dropped.
   int64_t Iterate(const std::function<void(const T& stack)>& f);
-
+#endif
   size_t GetMaxSamples() const;
   void SetMaxSamples(size_t max);
 
@@ -126,7 +130,7 @@ typename SampleRecorder<T>::DisposeCallback
 SampleRecorder<T>::SetDisposeCallback(DisposeCallback f) {
   return dispose_.exchange(f, std::memory_order_relaxed);
 }
-
+#if __STDC_HOSTED__
 template <typename T>
 SampleRecorder<T>::SampleRecorder()
     : dropped_samples_(0), size_estimate_(0), all_(nullptr), dispose_(nullptr) {
@@ -245,7 +249,7 @@ template <typename T>
 size_t SampleRecorder<T>::GetMaxSamples() const {
   return max_samples_.load(std::memory_order_acquire);
 }
-
+#endif
 }  // namespace profiling_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

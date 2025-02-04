@@ -44,12 +44,18 @@
 #include <cassert>
 #include <iterator>
 #include <numeric>
+#if __STDC_HOSTED__
 #include <random>
+#endif
 #include <type_traits>
+#if __STDC_HOSTED__
 #include <unordered_map>
 #include <unordered_set>
+#endif
 #include <utility>
+#if __STDC_HOSTED__
 #include <vector>
+#endif
 
 #include "absl/algorithm/algorithm.h"
 #include "absl/base/config.h"
@@ -111,6 +117,7 @@ ABSL_INTERNAL_CONSTEXPR_SINCE_CXX17 ContainerIter<C> c_end(C& c) {
 template <typename T>
 struct IsUnorderedContainer : std::false_type {};
 
+#if __STDC_HOSTED__
 template <class Key, class T, class Hash, class KeyEqual, class Allocator>
 struct IsUnorderedContainer<
     std::unordered_map<Key, T, Hash, KeyEqual, Allocator>> : std::true_type {};
@@ -118,6 +125,7 @@ struct IsUnorderedContainer<
 template <class Key, class Hash, class KeyEqual, class Allocator>
 struct IsUnorderedContainer<std::unordered_set<Key, Hash, KeyEqual, Allocator>>
     : std::true_type {};
+#endif
 
 }  // namespace container_algorithm_internal
 
@@ -897,6 +905,7 @@ container_algorithm_internal::ContainerIter<C> c_partition(C& c, Pred&& pred) {
                         std::forward<Pred>(pred));
 }
 
+#if __STDC_HOSTED__
 // c_stable_partition()
 //
 // Container-based version of the <algorithm> `std::stable_partition()` function
@@ -911,7 +920,7 @@ container_algorithm_internal::ContainerIter<C> c_stable_partition(C& c,
                                container_algorithm_internal::c_end(c),
                                std::forward<Pred>(pred));
 }
-
+#endif
 // c_partition_copy()
 //
 // Container-based version of the <algorithm> `std::partition_copy()` function
