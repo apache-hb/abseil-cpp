@@ -660,7 +660,10 @@ size_t PrepareInsertNonSoo(CommonFields& common, size_t hash, FindInfo target,
 }
 
 void HashTableSizeOverflow() {
+#if __STDC_HOSTED__
   ABSL_RAW_LOG(FATAL, "Hash table size overflow");
+#endif
+  std::abort();
 }
 
 }  // namespace container_internal

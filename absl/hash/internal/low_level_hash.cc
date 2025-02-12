@@ -18,17 +18,22 @@
 #include <cstdint>
 
 #include "absl/base/internal/unaligned_access.h"
+#include "absl/base/optimization.h"
 #include "absl/base/prefetch.h"
+#if __STDC_HOSTED__
 #include "absl/numeric/int128.h"
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace hash_internal {
 
 static uint64_t Mix(uint64_t v0, uint64_t v1) {
-  absl::uint128 p = v0;
+  __uint128_t p = v0;
   p *= v1;
-  return absl::Uint128Low64(p) ^ absl::Uint128High64(p);
+
+  // xor the upper and lower 64 bits.
+  return static_cast<uint64_t>(p) ^ static_cast<uint64_t>(p >> 64);
 }
 
 uint64_t LowLevelHashLenGt16(const void* data, size_t len, uint64_t seed,

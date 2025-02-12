@@ -35,6 +35,8 @@ endif
 arch_flags = cpp.get_supported_arguments(arch_cpp_flags)
 hw_flags = cpp.get_supported_arguments(hw_cpp_flags)
 
+add_project_arguments('-Wno-nullability-extension', language: 'cpp')
+
 libatomic = dependency('', required: false)
 if cpp.get_argument_syntax() != 'msvc' and not cpp.links('int main(){__sync_synchronize();}', name: 'atomic builtins')
   libatomic = cpp.find_library('atomic')
@@ -122,8 +124,8 @@ absl_base_headers = files(
 )
 
 absl_container_sources = files(
-  'absl/container/internal/hashtablez_sampler.cc',
-  'absl/container/internal/hashtablez_sampler_force_weak_definition.cc',
+  # 'absl/container/internal/hashtablez_sampler.cc',
+  # 'absl/container/internal/hashtablez_sampler_force_weak_definition.cc',
   'absl/container/internal/raw_hash_set.cc',
 )
 absl_container_headers = files(
@@ -639,11 +641,11 @@ absl_types_headers = files(
 #   dependencies: [dependency('threads'), libatomic],
 # )
 
-# absl_hash_lib = static_library(
-#   'absl_hash',
-#   absl_hash_sources,
-#   include_directories: absl_include_dir,
-# )
+absl_hash_lib = static_library(
+  'absl_hash',
+  absl_hash_sources,
+  include_directories: absl_include_dir,
+)
 
 # absl_numeric_lib = static_library(
 #   'absl_numeric',
@@ -732,18 +734,18 @@ absl_types_headers = files(
 #   ],
 # )
 
-# absl_container_lib = static_library(
-#   'absl_container',
-#   absl_container_sources,
-#   include_directories: absl_include_dir,
-#   link_with: [
-#     absl_base_lib,
-#     absl_debugging_lib,
-#     absl_hash_lib,
-#     absl_synchronization_lib,
-#     absl_time_lib,
-#   ],
-# )
+absl_container_lib = static_library(
+  'absl_container',
+  absl_container_sources,
+  include_directories: absl_include_dir,
+  link_with: [
+    # absl_base_lib,
+    # absl_debugging_lib,
+    absl_hash_lib,
+    # absl_synchronization_lib,
+    # absl_time_lib,
+  ],
+)
 
 # absl_flags_lib = static_library(
 #   'absl_flags',

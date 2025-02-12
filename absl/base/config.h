@@ -283,7 +283,9 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #ifdef ABSL_HAVE_THREAD_LOCAL
 #error ABSL_HAVE_THREAD_LOCAL cannot be directly set
 #else
+#if __STDC_HOSTED__
 #define ABSL_HAVE_THREAD_LOCAL 1
+#endif
 #endif
 
 // ABSL_HAVE_INTRINSIC_INT128
