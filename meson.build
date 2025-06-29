@@ -645,6 +645,7 @@ absl_hash_lib = static_library(
   'absl_hash',
   absl_hash_sources,
   include_directories: absl_include_dir,
+  build_by_default: false,
 )
 
 # absl_numeric_lib = static_library(
@@ -745,6 +746,7 @@ absl_container_lib = static_library(
     # absl_synchronization_lib,
     # absl_time_lib,
   ],
+  build_by_default: false,
 )
 
 # absl_flags_lib = static_library(
